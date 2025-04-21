@@ -1,12 +1,13 @@
 const clienteProductoService = require('../services/historialService');
+const HTTP = require('../constants/httpStatusCodes');  // Importar las constantes HTTP
 
 class ClienteProductoController {
   async historial(req, res) {
     try {
       const historial = await clienteProductoService.getHistorial();
-      res.status(200).json(historial);
+      res.status(HTTP.OK).json(historial);  // Usar HTTP.OK para el estado 200
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(HTTP.INTERNAL_SERVER_ERROR).json({ message: error.message });  
     }
   }
 
@@ -14,9 +15,9 @@ class ClienteProductoController {
     try {
       const { id_cliente } = req.params;
       const productos = await clienteProductoService.getProductosPorCliente(id_cliente);
-      res.status(200).json(productos);
+      res.status(HTTP.OK).json(productos);  // Usar HTTP.OK para el estado 200
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(HTTP.INTERNAL_SERVER_ERROR).json({ message: error.message });  
     }
   }
 
@@ -24,9 +25,9 @@ class ClienteProductoController {
     try {
       const { id_producto } = req.params;
       const clientes = await clienteProductoService.getClientesPorProducto(id_producto);
-      res.status(200).json(clientes);
+      res.status(HTTP.OK).json(clientes);  // Usar HTTP.OK para el estado 200
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(HTTP.INTERNAL_SERVER_ERROR).json({ message: error.message });  
     }
   }
 
@@ -34,11 +35,12 @@ class ClienteProductoController {
     try {
       const { id_cliente, id_producto } = req.body;
       const relacion = await clienteProductoService.asignarProducto(id_cliente, id_producto);
-      res.status(201).json(relacion);
+      res.status(HTTP.CREATED).json(relacion);  // Usar HTTP.CREATED para el estado 201
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(HTTP.INTERNAL_SERVER_ERROR).json({ message: error.message });  
     }
   }
 }
 
 module.exports = new ClienteProductoController();
+
