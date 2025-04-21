@@ -31,101 +31,122 @@
 | `GET` | `/cliente-producto/producto/{id_producto}` | Obtiene clientes con un producto | [http://localhost:3001/cliente-producto/producto/2](http://localhost:3001/cliente-producto/producto/2) |
 | `POST` | `/cliente-producto/asignar` | Asigna un producto a un cliente | [http://localhost:3001/cliente-producto/asignar](http://localhost:3001/cliente-producto/asignar) |
 | `DELETE` | `/cliente-producto/eliminar` | Elimina una relación cliente-producto | [http://localhost:3001/cliente-producto/eliminar](http://localhost:3001/cliente-producto/eliminar) |
-🗄️ Estructura de la Base de Datos
-Tabla clientes
+
+🗃️ Estructura de la Base de Datos
+📌 Tablas Principales
+👥 Tabla clientes
 sql
-Copiar
-Editar
 CREATE TABLE clientes (
     id SERIAL PRIMARY KEY NOT NULL,
-    dni VARCHAR(8),
-    nombre VARCHAR(80),
-    apepaternos VARCHAR(80),
+    dni VARCHAR(8) UNIQUE,
+    nombre VARCHAR(80) NOT NULL,
+    apepaternos VARCHAR(80) NOT NULL,
     apematernos VARCHAR(80),
-    fechanacimiento DATE
+    fechanacimiento DATE,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-Tabla productos
+Campos:
+
+id: Identificador único autoincremental (PK)
+
+dni: Documento Nacional de Identidad (único)
+
+nombre: Nombre del cliente
+
+apepaternos: Apellido paterno
+
+apematernos: Apellido materno
+
+fechanacimiento: Fecha de nacimiento
+
+creado_en: Fecha de creación (automática)
+
+🛍️ Tabla productos
 sql
-Copiar
-Editar
 CREATE TABLE productos (
     id SERIAL PRIMARY KEY NOT NULL,
-    nombre VARCHAR(100),
+    nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
-    precio DECIMAL(10,2)
+    precio DECIMAL(10,2) NOT NULL CHECK (precio > 0),
+    stock INTEGER DEFAULT 0 CHECK (stock >= 0),
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-Tabla cliente_producto (relación muchos a muchos)
+Campos:
+
+id: Identificador único autoincremental (PK)
+
+nombre: Nombre del producto
+
+descripcion: Descripción detallada
+
+precio: Precio unitario (mayor que 0)
+
+stock: Cantidad disponible (default 0)
+
+creado_en: Fecha de creación (automática)
+
+🔗 Tabla cliente_producto (Relación muchos-a-muchos)
 sql
-Copiar
-Editar
 CREATE TABLE cliente_producto (
     id_cliente INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
     id_producto INTEGER REFERENCES productos(id) ON DELETE CASCADE,
+    asignado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    cantidad INTEGER DEFAULT 1 CHECK (cantidad > 0),
     PRIMARY KEY (id_cliente, id_producto)
 );
-📝 Ejemplos de Datos de Prueba
-Insertar clientes
+Relaciones:
+
+id_cliente: FK a tabla clientes (eliminación en cascada)
+
+id_producto: FK a tabla productos (eliminación en cascada)
+
+Clave primaria compuesta por ambas FK
+
+📊 Datos de Ejemplo
+👥 Clientes de prueba
 sql
-Copiar
-Editar
-INSERT INTO clientes (dni, nombre, apepaternos, apematernos, fechanacimiento)
-VALUES
+INSERT INTO clientes (dni, nombre, apepaternos, apematernos, fechanacimiento) VALUES
 ('12345678', 'Juan Pérez', 'Pérez', 'Gómez', '1990-05-15'),
 ('23456789', 'Ana López', 'López', 'Martínez', '1985-08-22'),
 ('34567890', 'Carlos Ruiz', 'Ruiz', 'Fernández', '2000-11-30');
-Insertar productos
+🛍️ Productos de prueba
 sql
-Copiar
-Editar
-INSERT INTO productos (nombre, descripcion, precio)
-VALUES
-('Laptop Dell', 'Laptop de 15 pulgadas, procesador i7, 8GB RAM', 1200.50),
-('Móvil Samsung', 'Smartphone Galaxy S21, 128GB', 799.99),
-('Teclado Logitech', 'Teclado mecánico con retroiluminación', 99.99),
-('Monitor LG', 'Monitor 27 pulgadas, 144Hz', 349.75);
-Insertar relaciones cliente-producto
+INSERT INTO productos (nombre, descripcion, precio, stock) VALUES
+('Laptop Dell', 'Laptop de 15 pulgadas, i7, 8GB RAM', 1200.50, 10),
+('Móvil Samsung', 'Smartphone Galaxy S21, 128GB', 799.99, 15),
+('Teclado Logitech', 'Teclado mecánico retroiluminado', 99.99, 20),
+('Monitor LG', 'Monitor 27", 144Hz', 349.75, 8);
+🔗 Relaciones de prueba
 sql
-Copiar
-Editar
-INSERT INTO cliente_producto (id_cliente, id_producto)
-VALUES
-(1, 1),  -- Juan Pérez tiene la Laptop Dell
-(1, 2),  -- Juan Pérez tiene el Móvil Samsung
-(2, 3),  -- Ana López tiene el Teclado Logitech
-(3, 4);  -- Carlos Ruiz tiene el Monitor LG
-Consultas de ejemplo:
-Ver todos los clientes:
-
+INSERT INTO cliente_producto (id_cliente, id_producto, cantidad) VALUES
+(1, 1, 1),  -- Juan Pérez compró 1 Laptop Dell
+(1, 2, 2),  -- Juan Pérez compró 2 Móviles Samsung
+(2, 3, 1),  -- Ana López compró 1 Teclado Logitech
+(3, 4, 1);  -- Carlos Ruiz compró 1 Monitor LG
+🔍 Consulta de Ejemplo
+Ver relaciones cliente-producto con detalles:
 sql
-Copiar
-Editar
-SELECT * FROM clientes;
-Ver todas las relaciones cliente-producto:
-
-sql
-Copiar
-Editar
-SELECT * FROM cliente_producto;
-Ver todos los productos:
-
-sql
-Copiar
-Editar
-SELECT * FROM productos;
-Ver información completa de clientes y productos relacionados:
-
-sql
-Copiar
-Editar
-SELECT 
-    c.id AS id_cliente,
-    c.nombre AS nombre_cliente,
-    p.id AS id_producto,
-    p.nombre AS nombre_producto,
-    p.precio AS precio_producto
-FROM 
+SELECT
+    c.id AS cliente_id,
+    c.nombre || ' ' || c.apepaternos AS cliente,
+    p.id AS producto_id,
+    p.nombre AS producto,
+    cp.cantidad,
+    p.precio,
+    (cp.cantidad * p.precio) AS total
+FROM
     cliente_producto cp
-JOIN 
+JOIN
     clientes c ON cp.id_cliente = c.id
-JOIN 
-    productos p ON cp.id_producto = p.id;
+JOIN
+    productos p ON cp.id_producto = p.id
+ORDER BY
+    c.nombre, p.nombre;
+Resultado esperado:
+
+cliente_id |     cliente     | producto_id |     producto      | cantidad | precio  |  total
+-----------+-----------------+-------------+-------------------+----------+---------+---------
+     1     | Juan Pérez      |      1      | Laptop Dell       |    1     | 1200.50 | 1200.50
+     1     | Juan Pérez      |      2      | Móvil Samsung     |    2     | 799.99  | 1599.98
+     2     | Ana López       |      3      | Teclado Logitech  |    1     | 99.99   |  99.99
+     3     | Carlos Ruiz     |      4      | Monitor LG        |    1     | 349.75  | 349.75
