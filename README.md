@@ -92,3 +92,71 @@ En el body JSON debes enviar:
 }
 
 
+DROP TABLE clientes
+CREATE TABLE clientes (
+    id SERIAL PRIMARY KEY NOT NULL,
+    dni VARCHAR(8),
+    nombre VARCHAR(80),
+    apepaternos VARCHAR(80),
+    apematernos VARCHAR(80),
+    fechanacimiento DATE
+);
+
+CREATE TABLE productos (
+    id SERIAL PRIMARY KEY NOT NULL,
+    nombre VARCHAR(100),
+    descripcion TEXT,
+    precio DECIMAL(10,2)
+);
+
+CREATE TABLE cliente_producto (
+    id_cliente INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
+    id_producto INTEGER REFERENCES productos(id) ON DELETE CASCADE,
+    PRIMARY KEY (id_cliente, id_producto)
+);
+
+
+INSERT INTO clientes (dni, nombre, apepaternos, apematernos, fechanacimiento)
+VALUES
+('12345678', 'Juan Pérez', 'Pérez', 'Gómez', '1990-05-15'),
+('23456789', 'Ana López', 'López', 'Martínez', '1985-08-22'),
+('34567890', 'Carlos Ruiz', 'Ruiz', 'Fernández', '2000-11-30');
+
+INSERT INTO productos (nombre, descripcion, precio)
+VALUES
+('Laptop Dell', 'Laptop de 15 pulgadas, procesador i7, 8GB RAM', 1200.50),
+('Móvil Samsung', 'Smartphone Galaxy S21, 128GB', 799.99),
+('Teclado Logitech', 'Teclado mecánico con retroiluminación', 99.99),
+('Monitor LG', 'Monitor 27 pulgadas, 144Hz', 349.75);
+
+INSERT INTO cliente_producto (id_cliente, id_producto)
+VALUES
+(1, 1),  -- Juan Pérez tiene la Laptop Dell
+(1, 2),  -- Juan Pérez tiene el Móvil Samsung
+(2, 3),  -- Ana López tiene el Teclado Logitech
+(3, 4);  -- Carlos Ruiz tiene el Monitor LG
+
+
+SELECT * FROM clientes
+SELECT * FROM cliente_producto
+SELECT * FROM productos
+
+
+
+SELECT 
+    c.id AS id_cliente,
+    c.nombre AS nombre_cliente,
+    p.id AS id_producto,
+    p.nombre AS nombre_producto,
+    p.precio AS precio_producto
+FROM 
+    cliente_producto cp
+JOIN 
+    clientes c ON cp.id_cliente = c.id
+JOIN 
+    productos p ON cp.id_producto = p.id;
+
+
+
+
+
