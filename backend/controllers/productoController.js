@@ -41,9 +41,9 @@ class ProductoController {
     }
 
     async createProducto(req, res) {
-        const { nombre, descripcion, precio } = req.body;
+        const { nombre, descripcion, precio, stock} = req.body;
         try {
-            const nuevoProducto = await productoService.createProducto({ nombre, descripcion, precio });
+            const nuevoProducto = await productoService.createProducto({ nombre, descripcion, precio, stock});
             res.status(httpStatus.CREATED).json(nuevoProducto);
         } catch (error) {
             res.status(httpStatus.BAD_REQUEST).json({ message: error.message });

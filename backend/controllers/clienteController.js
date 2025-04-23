@@ -106,7 +106,21 @@ class   ClienteController {
         } catch (error) {
             res.status(HTTP.INTERNAL_SERVER_ERROR).json({ message: 'Error en eliminar cliente por Dni', error });
         }
-    }  
+    } 
+    async getHistorialClienteById(req, res) {
+       const { id_cliente } = req.params;
+       try{
+        const id = await clienteModel.getHistorialClienteById(id_cliente);
+        if (id) {
+            res.status(HTTP.OK).json(id); 
+        } else {
+            res.status(HTTP.NOT_FOUND).json({ message: 'Cliente no encontrado' });
+        }
+       }catch (error) {
+        res.status(HTTP.INTERNAL_SERVER_ERROR).json({ message: 'Error en obtener historial de cliente', error });
+       }
+
+    } 
         
 
 }

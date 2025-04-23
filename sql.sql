@@ -10,7 +10,6 @@ CREATE TABLE clientes (
 );
 
 
-sql
 CREATE TABLE productos (
     id SERIAL PRIMARY KEY NOT NULL,
     nombre VARCHAR(100) NOT NULL,
@@ -33,22 +32,24 @@ INSERT INTO clientes (dni, nombre, apepaternos, apematernos, fechanacimiento) VA
 ('23456789', 'Ana López', 'López', 'Martínez', '1985-08-22'),
 ('34567890', 'Carlos Ruiz', 'Ruiz', 'Fernández', '2000-11-30');
 🛍️ Productos de prueba
-sql
+
 INSERT INTO productos (nombre, descripcion, precio, stock) VALUES
-('Laptop Dell', 'Laptop de 15 pulgadas, i7, 8GB RAM', 1200.50, 10),
+('Laptop Dell', 'Laptop de 15 pulgadas, i7, 8GB RAM', 1200.50, 10)
 ('Móvil Samsung', 'Smartphone Galaxy S21, 128GB', 799.99, 15),
 ('Teclado Logitech', 'Teclado mecánico retroiluminado', 99.99, 20),
 ('Monitor LG', 'Monitor 27", 144Hz', 349.75, 8);
 🔗 Relaciones de prueba
-sql
+
 INSERT INTO cliente_producto (id_cliente, id_producto, cantidad) VALUES
 (1, 1, 1),  -- Juan Pérez compró 1 Laptop Dell
 (1, 2, 2),  -- Juan Pérez compró 2 Móviles Samsung
 (2, 3, 1),  -- Ana López compró 1 Teclado Logitech
 (3, 4, 1);  -- Carlos Ruiz compró 1 Monitor LG
 🔍 Consulta de Ejemplo
+
+
 Ver relaciones cliente-producto con detalles:
-sql
+
 SELECT
     c.id AS cliente_id,
     c.nombre || ' ' || c.apepaternos AS cliente,

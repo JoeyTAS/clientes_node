@@ -37,6 +37,33 @@ class ClienteModel {
         const result = await db.query('DELETE FROM clientes WHERE dni = $1 RETURNING *', [dni]);
         return result.rows[0];
     }
+
+    //ver por ID el historial de un cliente
+    async getHistorialClienteById(id_cliente) {
+        const result = await db.query(`
+          SELECT
+              c.id AS cliente_id,
+              c.nombre || ' ' || c.apepaternos AS cliente,
+              p.id AS producto_id,
+              p.nombre AS producto,
+              cp.cantidad,
+              p.precio,
+              (cp.cantidad * p.precio) AS total
+          FROM
+              cliente_producto cp
+          JOIN
+              clientes c ON cp.id_cliente = c.id
+          JOIN
+              productos p ON cp.id_producto = p.id
+          WHERE 
+              c.id = $1
+          ORDER BY  
+              c.nombre, p.nombre
+        `, [id_cliente]);
+        
+        return result.rows;
+      }
+      
     
 
 }

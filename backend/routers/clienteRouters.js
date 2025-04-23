@@ -15,5 +15,7 @@ router.put('/dni/:dni', (req, res) => clienteController.updateClienteByDni(req, 
 router.delete('/:id', (req, res) => clienteController.deleteCliente(req, res));
 router.delete('/dni/:dni', (req, res) => clienteController.deleteClienteByDni(req, res));
 
+router.get('/historial-cliente/:id_cliente',  (req, res) => clienteController.getHistorialClienteById(req, res));
+
 module.exports = router;
 

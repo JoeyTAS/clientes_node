@@ -26,9 +26,13 @@ class ProductoService {
 
 
     async createProducto(data) {
-        const { nombre, descripcion, precio } = data;
-        if (!nombre || !descripcion || !precio) {
-            throw new Error('Faltan datos necesarios para crear el producto');
+        const { nombre, descripcion, precio, stock } = data;
+        try{
+            if (!nombre || !descripcion || !precio || !stock) {
+                throw new Error('Faltan datos necesarios para crear el producto');
+            }
+        }catch(e) {
+            throw new Error('Error al crear el producto: ' + e.message);
         }
         return await productoModel.createProducto(data);
     }

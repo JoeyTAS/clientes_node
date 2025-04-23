@@ -7,4 +7,5 @@ router.get('/cliente/:id_cliente', controller.productosPorCliente);
 router.get('/producto/:id_producto', controller.clientesPorProducto);
 router.post('/asignar', controller.asignar);
 
+
 module.exports = router;

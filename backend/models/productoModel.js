@@ -19,10 +19,10 @@ class ProductoModel {
         return result.rows[0];
     }
 
-    async createProducto({nombre, descripcion, precio}) {
+    async createProducto({nombre, descripcion, precio, stock}) {
         const result = await db.query(
-            'INSERT INTO productos(nombre, descripcion, precio) VALUES ($1, $2, $3) RETURNING *',
-            [nombre, descripcion, precio]
+            'INSERT INTO productos(nombre, descripcion, precio, stock) VALUES ($1, $2, $3, $4) RETURNING *',
+            [nombre, descripcion, precio, stock]
         );
         return result.rows[0];
     }

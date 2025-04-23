@@ -31,5 +31,8 @@ class ClienteService {
     async deleteClienteByDni(dni) {
         return await clienteModel.deleteClienteByDni(dni);
     }
+    async getHistorialClienteById(id_cliente) {
+        return await clienteModel.getHistorialClienteById(id_cliente);
+    }
 }
 module.exports = new ClienteService();
